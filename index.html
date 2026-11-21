@@ -1,0 +1,192 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>chaos</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Bricolage+Grotesque:opsz,wght@12..96,500;12..96,800&family=Instrument+Sans:wght@400;500;600&display=swap" rel="stylesheet">
+<style>
+/* Layout: white sketchbook paper, a short statement, then a grid of pages that open full size.
+   No black anywhere on the page, same rule as the drawings: the darkest tone is indigo ink. */
+:root{
+  --paper:#fdfdfb;
+  --sheet:#ffffff;
+  --ink:#1c1858;
+  --ink-soft:#5a577d;
+  --rule:#e4e3ee;
+  --veil:#1a1650;
+  --display:"Bricolage Grotesque", "Avenir Next", system-ui, sans-serif;
+  --body:"Instrument Sans", "Helvetica Neue", system-ui, sans-serif;
+  color-scheme:light;
+}
+*{box-sizing:border-box}
+html,body{margin:0}
+body{background:var(--paper);color:var(--ink);font-family:var(--body);font-size:16px;line-height:1.55;-webkit-font-smoothing:antialiased}
+.wrap{max-width:1240px;margin:0 auto;padding:0 clamp(16px,4vw,48px)}
+header{padding:clamp(40px,7vw,88px) 0 clamp(28px,4vw,44px);display:grid;grid-template-columns:minmax(0,1fr) minmax(0,1.15fr);gap:clamp(24px,5vw,72px);align-items:end}
+.mark{font-family:var(--display);font-weight:800;font-size:clamp(76px,15vw,184px);line-height:.82;letter-spacing:-.045em;margin:0}
+.mark span:nth-child(1){color:#e8173f}.mark span:nth-child(2){color:#ff7a00}.mark span:nth-child(3){color:#00a35a}.mark span:nth-child(4){color:#1f4fe0}.mark span:nth-child(5){color:#c20fd0}
+.nick{font-weight:800;color:var(--ink)}
+.sub{font-family:var(--display);font-weight:500;font-size:clamp(17px,1.6vw,20px);margin:18px 0 0;color:var(--ink-soft)}
+.statement p{margin:0 0 14px;max-width:62ch;font-size:17px}
+.facts{display:flex;flex-wrap:wrap;gap:8px 28px;margin:22px 0 0;padding:16px 0 0;border-top:1px solid var(--rule);font-size:14px}
+.facts div{display:flex;flex-direction:column}
+.facts dt{color:var(--ink-soft);font-size:12px;letter-spacing:.06em;text-transform:uppercase}
+.facts dd{margin:0;font-weight:600;font-variant-numeric:tabular-nums}
+.bar{position:sticky;top:0;z-index:5;background:color-mix(in srgb,var(--paper) 92%,transparent);backdrop-filter:blur(8px);border-bottom:1px solid var(--rule)}
+.bar .wrap{display:flex;gap:10px;align-items:center;flex-wrap:wrap;padding-top:12px;padding-bottom:12px}
+.bar .lbl{font-size:13px;color:var(--ink-soft);margin-right:4px}
+.chip{font:600 14px var(--body);color:var(--ink);background:var(--sheet);border:1.5px solid var(--rule);border-radius:999px;padding:7px 14px;cursor:pointer;display:inline-flex;gap:8px;align-items:center}
+.chip:hover{border-color:var(--ink-soft)}
+.chip[aria-pressed="true"]{background:var(--ink);border-color:var(--ink);color:var(--paper)}
+.chip .c{font-variant-numeric:tabular-nums;opacity:.65;font-weight:500}
+.chip i{width:10px;height:10px;border-radius:50%;display:inline-block}
+.k-rainbow i{background:conic-gradient(#e8173f,#ff7a00,#ffd60a,#00a35a,#1f4fe0,#c20fd0,#e8173f)}
+.k-mono i{background:#e0119a}
+.k-random i{background:linear-gradient(135deg,#ffd60a 0 33%,#1f4fe0 33% 66%,#e8173f 66%)}
+main.wrap{padding-top:clamp(28px,4vw,48px);padding-bottom:clamp(30px,9vw,10px)}
+.grid{list-style:none;margin:0;padding:0;display:grid;grid-template-columns:repeat(auto-fill,minmax(230px,1fr));gap:clamp(22px,3vw,40px) clamp(18px,2.4vw,32px)}
+.grid li[hidden]{display:none}
+.card{all:unset;display:flex;flex-direction:column;gap:12px;cursor:zoom-in;width:100%}
+.card:focus-visible .pg{outline:3px solid var(--ink);outline-offset:4px}
+.pg{aspect-ratio:2081/2849;background:var(--sheet);box-shadow:0 1px 2px rgba(28,24,88,.10),0 10px 26px -12px rgba(28,24,88,.28);overflow:hidden;transition:transform .25s ease, box-shadow .25s ease}
+.pg img{width:100%;height:100%;object-fit:cover;display:block}
+.card:hover .pg{transform:translateY(-4px) rotate(-.4deg);box-shadow:0 2px 4px rgba(28,24,88,.10),0 22px 36px -16px rgba(28,24,88,.36)}
+.cap{display:grid;grid-template-columns:auto 1fr;gap:10px;align-items:baseline}
+.num{font:800 15px var(--display);font-variant-numeric:tabular-nums;color:var(--ink-soft)}
+.ttl{font-weight:600;font-size:15px}
+.dots{display:flex;gap:3px;align-self:center}
+.dots b{width:9px;height:9px;border-radius:50%}
+footer{border-top:1px solid var(--rule);padding:22px 0 40px;color:var(--ink-soft);font-size:14px}
+footer .wrap{display:flex;justify-content:space-between;flex-wrap:wrap;gap:8px}
+/* viewer */
+dialog{border:0;padding:0;max-width:none;max-height:none;width:100%;height:100%;background:var(--veil);color:var(--paper)}
+dialog::backdrop{background:transparent}
+.view{height:100%;display:grid;grid-template-columns:minmax(0,1fr) 300px;gap:0}
+.stage{position:relative;display:flex;align-items:center;justify-content:center;padding:24px 72px;min-height:0}
+.stage img{max-width:100%;max-height:100%;object-fit:contain;box-shadow:0 20px 60px rgba(0,0,0,.35);background:#fff}
+.nav{position:absolute;top:50%;transform:translateY(-50%);width:48px;height:48px;border-radius:50%;border:1.5px solid rgba(255,255,255,.35);background:transparent;color:var(--paper);font-size:22px;cursor:pointer;display:grid;place-items:center}
+.nav:hover{background:rgba(255,255,255,.12)}
+.nav:focus-visible,.close:focus-visible{outline:2px solid #fff;outline-offset:3px}
+.prev{left:14px}.next{right:14px}
+.side{padding:28px 28px 28px 8px;display:flex;flex-direction:column;gap:18px;overflow:auto}
+.close{align-self:flex-end;font:600 14px var(--body);color:var(--paper);background:transparent;border:1.5px solid rgba(255,255,255,.35);border-radius:999px;padding:7px 14px;cursor:pointer}
+.close:hover{background:rgba(255,255,255,.12)}
+.vnum{font:800 56px/1 var(--display);font-variant-numeric:tabular-nums;letter-spacing:-.03em;margin-top:auto}
+.vnum small{font-size:18px;font-weight:500;opacity:.6;letter-spacing:0}
+.vttl{font:500 26px/1.15 var(--display);margin:0;text-wrap:balance}
+.vkind{font-size:14px;opacity:.75}
+.swl{font-size:12px;letter-spacing:.06em;text-transform:uppercase;opacity:.6;margin-bottom:8px}
+.sw{display:flex;gap:6px;flex-wrap:wrap}
+.sw b{width:30px;height:30px;border-radius:50%;border:2px solid rgba(255,255,255,.85)}
+.hint{font-size:12px;opacity:.5}
+@media (max-width:760px){
+  header{grid-template-columns:1fr;align-items:start}
+  .view{grid-template-columns:1fr;grid-template-rows:minmax(0,1fr) auto}
+  .stage{padding:56px 12px 8px}
+  .nav{top:auto;bottom:8px;transform:none;width:42px;height:42px;background:rgba(26,22,80,.6)}
+  .side{padding:12px 16px 20px;gap:10px;flex-direction:row;flex-wrap:wrap;align-items:center}
+  .close{position:absolute;top:12px;right:12px}
+  .vnum{font-size:34px;margin:0}
+  .vttl{font-size:20px;flex:1 1 60%}
+  .hint{display:none}
+  .grid{grid-template-columns:repeat(2,minmax(0,1fr))}
+}
+@media (prefers-reduced-motion:reduce){*{transition:none!important}}
+</style>
+</head>
+<body>
+<div class="wrap">
+<header>
+  <div>
+    <h1 class="mark" aria-label="chaos"><span>c</span><span>h</span><span>a</span><span>o</span><span>s</span></h1>
+    <p class="sub">Marker drawings by <strong class="nick">shotapop</strong></p>
+  </div>
+  <div class="statement">
+    <p>I started this little project because I was too focused on making everything perfect. I hyperanalyzed every line I made, but my hand tremors wouldn't let me draw a straight one. So I made these pages to prove to myself that nothing is supposed to be perfect. There is art in chaos and imperfection.</p>
+    <p>I never used black. I didn't want it to interfere with the color. There was no plan for any page: I followed the lines and let them lead, the way a zen drawing practice works, and this is where they went.</p>
+    <dl class="facts">
+      <div><dt>Artist</dt><dd>shotapop</dd></div>
+      <div><dt>Medium</dt><dd>Alcohol markers on paper</dd></div>
+      <div><dt>Markers</dt><dd>Touch, Santi, Loozz</dd></div>
+      <div><dt>Pages</dt><dd>36</dd></div>
+      <div><dt>Black used</dt><dd>None</dd></div>
+      <div><dt>Year</dt><dd>2026</dd></div>
+    </dl>
+  </div>
+</header>
+</div>
+<main class="wrap"><ul class="grid" id="grid"></ul></main>
+<footer><div class="wrap"><span>chaos · a sketchbook series by shotapop · 2026</span></div></footer>
+
+<dialog id="viewer" aria-label="Page viewer">
+  <div class="view">
+    <div class="stage">
+      <button class="nav prev" id="prev" aria-label="Previous page">&#8592;</button>
+      <img id="vimg" alt="">
+      <button class="nav next" id="next" aria-label="Next page">&#8594;</button>
+    </div>
+    <aside class="side">
+      <button class="close" id="close">Close</button>
+      <div class="vnum" id="vnum"></div>
+      <h2 class="vttl" id="vttl"></h2>
+      <div class="vkind">shotapop · alcohol markers</div>
+      
+      
+      <div class="hint">← → to move · Esc to close</div>
+    </aside>
+  </div>
+</dialog>
+
+<script>
+const PIECES = [{"n":"01","t":"The start"},{"n":"02","t":"Green eye"},{"n":"03","t":"Rings"},{"n":"04","t":"Pink diagonals"},{"n":"05","t":"Star and shapes"},{"n":"06","t":"Portal"},{"n":"07","t":"Spectrum slope"},{"n":"08","t":"Agates in blue"},{"n":"09","t":"Violet puzzle"},{"n":"10","t":"My friends and I"},{"n":"11","t":"Blue ribbon"},{"n":"12","t":"Four red islands"},{"n":"13","t":"Diamond"},{"n":"14","t":"Shape garden"},{"n":"15","t":"Drift"},{"n":"16","t":"Bottles and plugs"},{"n":"17","t":"Stripes and worms"},{"n":"18","t":"Cells"},{"n":"19","t":"Rainbow wall"},{"n":"20","t":"Spiral"},{"n":"21","t":"Hatched shards"},{"n":"22","t":"Pink tide"},{"n":"23","t":"Screaming face"},{"n":"24","t":"Green drips"},{"n":"25","t":"Blue river"},{"n":"26","t":"Berry stripes"},{"n":"27","t":"Pink marble"},{"n":"28","t":"Green diamond"},{"n":"29","t":"Star ripple"},{"n":"30","t":"Lime"},{"n":"31","t":"Targets"},{"n":"32","t":"Clovers"},{"n":"33","t":"Magenta and yellow"},{"n":"34","t":"Blindness"},{"n":"35","t":"Peridots"},{"n":"36","t":"Purple ribs"}];
+const TOTAL = 36;
+const visible = PIECES.slice(); let cur = -1;
+
+const grid = document.getElementById("grid");
+
+PIECES.forEach((p,i)=>{
+  const li = document.createElement("li");
+  li.innerHTML = '<button class="card" aria-label="Open no. '+p.n+', '+p.t+'"><div class="pg"><img src="thumb/'+p.n+'.jpg" alt="'+p.t+', marker drawing" loading="'+(i<8?"eager":"lazy")+'" width="640" height="876"></div>'+
+    '<div class="cap"><span class="num">'+p.n+'</span><span class="ttl">'+p.t+'</span></div></button>';
+  li.querySelector("button").onclick = ()=>open(p.n);
+  grid.appendChild(li);
+});
+
+
+const dlg = document.getElementById("viewer"), vimg = document.getElementById("vimg");
+function show(i){
+  cur = (i+visible.length)%visible.length;
+  const p = visible[cur];
+  vimg.src = "img/"+p.n+".jpg"; vimg.alt = p.t+", marker drawing";
+  document.getElementById("vnum").innerHTML = p.n+' <small>/ '+PIECES.length+'</small>';
+  document.getElementById("vttl").textContent = p.t;
+  const nx = visible[(cur+1)%visible.length]; new Image().src = "img/"+nx.n+".jpg";
+  if (location.hash !== "#no-"+p.n) history.replaceState(null,"","#no-"+p.n);
+}
+function open(n){
+  let i = visible.findIndex(p=>p.n===n);
+  if (i<0) return;
+  show(i); if(!dlg.open) dlg.showModal();
+}
+function closeV(){ if(dlg.open) dlg.close(); }
+dlg.addEventListener("close", ()=>{ history.replaceState(null,"",location.pathname+location.search); });
+document.getElementById("close").onclick = closeV;
+document.getElementById("prev").onclick = ()=>show(cur-1);
+document.getElementById("next").onclick = ()=>show(cur+1);
+dlg.addEventListener("click", e=>{ if(e.target.classList.contains("stage")) closeV(); });
+document.addEventListener("keydown", e=>{
+  if(!dlg.open) return;
+  if(e.key==="ArrowRight"){ show(cur+1); e.preventDefault(); }
+  if(e.key==="ArrowLeft"){ show(cur-1); e.preventDefault(); }
+});
+let tx=null;
+dlg.addEventListener("touchstart", e=>{ tx=e.touches[0].clientX; }, {passive:true});
+dlg.addEventListener("touchend", e=>{ if(tx===null) return; const dx=e.changedTouches[0].clientX-tx; if(Math.abs(dx)>50) show(cur+(dx<0?1:-1)); tx=null; });
+function fromHash(){ const m = location.hash.match(/^#no-(\d\d)$/); if(m) open(m[1]); }
+window.addEventListener("hashchange", fromHash); fromHash();
+</script>
+</body>
+</html>
